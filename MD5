@@ -1,0 +1,16 @@
+ab1d8dc6f2587bde2e563c549486771b *DESCRIPTION
+3ca2608e10e202d2d4c36fa7ab15670e *NAMESPACE
+09fbc28352b2de62ebd885bfd3ba878d *R/data.R
+f97f89a744cd022f952d98ae2b05c062 *R/extdata.R
+010cd18a8198207f25a15f8eb7e556e6 *R/sta-package.R
+09d627dc6b90fa7a14a69d9b700f4d24 *R/sta.R
+6e5becfd42ac6d75c4daf67ab15a28fb *R/staFunctions.R
+fe8f001d4d116915197c00c0872089ad *data/marismas.RData
+f65ae23f1c74b42a2fb4a33acc326094 *inst/extdata/ndmi.tif
+8d4e7b644b9dfbb285cb8b3ebeb69a6c *man/getMaster.Rd
+9695225954b37faa76af5967b41d5368 *man/marismas.Rd
+e13004aa7df49dabb9fe213ca8a6c2ee *man/ndmi.Rd
+21fdba6715966538da3254e733cc5889 *man/plot.staMatrix.Rd
+d0cf81a4e0150726c08244e9379328ab *man/plot.staNumeric.Rd
+03871df152ce14bbe93d5969b2db6116 *man/sta-package.Rd
+6b876388ddf2caee5ab06027f1f9d270 *man/sta.Rd
