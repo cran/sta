@@ -90,9 +90,9 @@ sta.matrix <- function(df,
   
   if( !is.null(dirToSaveSTA) ){
     reportFileName <- paste0( dirToSaveSTA, "/sta_progress.txt" )
-    file.create(path = reportFileName, showWarnings = F)
-    write( "--- STA began at ---", file = reportFileName, append = T )
-    write( as.character(Sys.time()[1]), file = reportFileName, append = T )
+    file.create(path = reportFileName, showWarnings = FALSE)
+    write( "--- STA began at ---", file = reportFileName, append = TRUE )
+    write( as.character(Sys.time()[1]), file = reportFileName, append = TRUE )
   }
   
   kluster <- parallel::makeCluster(spec = numCores, outfile = "")
@@ -143,9 +143,9 @@ sta.matrix <- function(df,
                     }
   stopCluster(kluster)
   if( !is.null(dirToSaveSTA) ){
-    write( as.character(Sys.time()[1]), file = reportFileName, append = T)
-    write("If save = TRUE, output will be saved in this directory shortly", file = reportFileName, append = T)
-    write( "--- STA ended at ---", file = reportFileName, append = T)
+    write( as.character(Sys.time()[1]), file = reportFileName, append = TRUE)
+    write("If save = TRUE, output will be saved in this directory shortly", file = reportFileName, append = TRUE)
+    write( "--- STA ended at ---", file = reportFileName, append = TRUE)
   }
   
   mean[, c(3,4)] <- output[,1:2]
@@ -172,11 +172,11 @@ getData <- function(data, freq, startYear, endYear, interAnnualPeriod){
   yearsToAnalyze <- c(sapply(1:length(beginPeriod), function(s) (beginPeriod[s]+1):endPeriod[s] ))
   years <- (startYear:endYear)[interAnnualPeriod]
   
-  if(class(data) == "numeric"){
+  if( inherits(data, "numeric") ){# class(data) == "numeric"
     output <- data[yearsToAnalyze]
   }
   
-  if(class(data) == "matrix"){
+  if( inherits(data, "matrix") ){ # class(data) == "matrix"
     output <- data[,yearsToAnalyze+2]
   }
   
@@ -265,7 +265,7 @@ getGlobalDaysUsedBasicStats <- function(intraAnnualPeriod = c("wetSeason", "dryS
   
   if(!is.null(adhocPeriod)){
     
-    if( class(adhocPeriod) != "list" | length(adhocPeriod) != 2 ){
+    if( !inherits(adhocPeriod, "list") | length(adhocPeriod) != 2 ){ # class(adhocPeriod) != "list"
       stop("adhocPeriod must be a list of length 2")
     } else {
       daysToAnalyze <- adhocPeriod$partial
@@ -319,7 +319,7 @@ getBasicStatsAdhoc <- function(y, freq, adhocPeriod){
   
   years <- 1:(length(y)/freq)
   
-  if( class(adhocPeriod) != "list" | length(adhocPeriod) != 2 ){
+  if( !inherits(adhocPeriod, "list") | length(adhocPeriod) != 2 ){ # class(adhocPeriod) != "list"
     stop("adhocPeriod must be a list of length 2")
   }
   
@@ -351,7 +351,7 @@ getOutput <- function(data,
     intraAnnualPeriod <- NULL
   } 
   
-  if(class(data) == "numeric"){
+  if( inherits(data, "numeric") ){ # class(data) == "numeric"
     output$mean <- sta.ts(ts = data,
                           intraAnnualPeriod = intraAnnualPeriod, adhocPeriod = adhocPeriod,
                           ampType = "mean", freq = freq, numFreq = numFreq,
@@ -366,7 +366,7 @@ getOutput <- function(data,
                                 ampType = "semi-annual", freq = freq, numFreq = numFreq, delta = delta)
   }
   
-  if(class(data) == "matrix"){
+  if( inherits(data, "matrix")){ #  class(data) == "matrix"
     output <- sta.matrix(df = data,
                          intraAnnualPeriod = intraAnnualPeriod, adhocPeriod = adhocPeriod,
                          freq = freq, numFreq = numFreq, delta = delta, numCores = numCores,

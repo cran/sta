@@ -76,13 +76,13 @@
 #' ndmi_path = system.file("extdata", "ndmi.tif", package = "sta")
 #' ndmiSTACK <- stack(ndmi_path)
 #' dir.create(path=paste0(system.file("extdata", package="sta"), "/output_ndmi"),
-#'           showWarnings=F)
+#'           showWarnings=FALSE)
 #' outputDIR = paste0(system.file("extdata", package="sta"), "/output_ndmi")
 #' 
 #' sta_ndmi_21016 <- sta(data = ndmiSTACK, freq = 36,
 #'                   numFreq = 4, delta = 0.2, intraAnnualPeriod = "wetSeason",
 #'                   startYear = 2000, endYear = 2018, interAnnualPeriod = c(2,10,16),
-#'                   save = TRUE, numCores = 5, dirToSaveSTA = outputDIR)}
+#'                   save = TRUE, numCores = 2L, dirToSaveSTA = outputDIR)}
 #'  
 #' @importFrom raster rasterToPoints
 #' @importFrom raster writeRaster
@@ -149,9 +149,11 @@
 #' \item{ts}{time series object; \code{data} in \code{\link[stats]{ts}} format}
 #' \item{fit}{numeric vector with output of \code{\link[geoTS]{haRmonics}}}
 #' \item{sta}{a list containing the following elements:}
-#' \item{   }{\code{mean} a list of 12 elements with STA output for shape parameter \emph{mean}}
-#' \item{   }{\code{annual} a list of 12 elements with STA output for shape parameter \emph{annual}}
-#' \item{   }{\code{semiannual} a list of 12 elements with STA output for shape parameter \emph{semiannual}}
+#' \itemize{
+#' \item \code{mean} a list of 12 elements with STA output for shape parameter \emph{mean}
+#' \item \code{annual} a list of 12 elements with STA output for shape parameter \emph{annual}
+#' \item \code{semiannual} a list of 12 elements with STA output for shape parameter \emph{semiannual}
+#' }
 #' \item{significance}{numeric in the interval (0,1) or \code{NULL} when default used}
 #'
 #' When \code{class(data)} is a \code{RasterStack} or a \code{\link[base]{matrix}}, an object of class
@@ -160,39 +162,36 @@
 #' \item{daysUsedFit}{integer vector indicating the indices used to fit harmonic regression. see \code{\link[geoTS]{haRmonics}}}
 #' \item{intervalsUsedBasicStats}{numeric vector indicating the indices used on calculation of basic statistics}
 #' \item{sta}{a list containg the following elements:}
-#' \item{   }{\code{mean} a matrix of 4 columns with STA output for shape parameter \emph{mean}. First two columns provide geolocation of analyzed pixels, 
-#' third and fourth columns show p-value and slope estimate of STA, respectively}
-#' \item{   }{\code{mean_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{mean}. First two columns provide geolocation of analyzed pixels, 
+#' \itemize{
+#' \item \code{mean} a matrix of 4 columns with STA output for shape parameter \emph{mean}. First two columns provide geolocation of analyzed pixels, 
+#' third and fourth columns show p-value and slope estimate of STA, respectively
+#' \item \code{mean_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{mean}. First two columns provide geolocation of analyzed pixels, 
 #' from third to tenth columns show mean, standard deviation, global minimum, and maximum of minimum values, as well as mean, standard deviation,
-#' global minimum, and maximum of maximum values, respectively}
-#' \item{   }{\code{annual} a matrix of 4 columns with STA output for shape parameter \emph{annual}. First two columns provide geolocation of analyzed pixels, 
-#' third and fourth columns show p-value and slope estimate of STA, respectively}
-#' \item{   }{\code{annual_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{annual}. First two columns provide geolocation of analyzed pixels, 
+#' global minimum, and maximum of maximum values, respectively
+#' \item \code{annual} a matrix of 4 columns with STA output for shape parameter \emph{annual}. First two columns provide geolocation of analyzed pixels, 
+#' third and fourth columns show p-value and slope estimate of STA, respectively
+#' \item \code{annual_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{annual}. First two columns provide geolocation of analyzed pixels, 
 #' from third to tenth columns show mean, standard deviation, global minimum, and maximum of minimum values, as well as mean, standard deviation,
-#' global minimum, and maximum of maximum values, respectively}
-#' \item{   }{\code{semiannual} a matrix of 4 columns with STA output for shape parameter \emph{semiannual}. First two columns provide geolocation of analyzed pixels, 
-#' third and fourth columns show p-value and slope estimate of STA, respectively}
-#' \item{   }{\code{semiannual_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{semiannual}. First two columns provide geolocation of analyzed pixels, 
+#' global minimum, and maximum of maximum values, respectively
+#' \item \code{semiannual} a matrix of 4 columns with STA output for shape parameter \emph{semiannual}. First two columns provide geolocation of analyzed pixels, 
+#' third and fourth columns show p-value and slope estimate of STA, respectively
+#' \item \code{semiannual_basicStats} a matrix of 10 columns with basic statistics for shape parameter \emph{semiannual}. First two columns provide geolocation of analyzed pixels, 
 #' from third to tenth columns show mean, standard deviation, global minimum, and maximum of minimum values, as well as mean, standard deviation,
-#' global minimum, and maximum of maximum values, respectively}
-#' 
+#' global minimum, and maximum of maximum values, respectively 
+#' }
 #' @references Eastman, R., Sangermano, F., Ghimine, B., Zhu, H., Chen, H., Neeti, N., Cai, Y., Machado E., Crema, S. (2009).
 #' \emph{Seasonal trend analysis of image time series},
 #' International Journal of Remote Sensing, \bold{30(10)}, 2721--2726.
 #' 
-sta <- function(data, 
-                freq, numFreq = 4, delta = 0.2, 
-                startYear = 2000, endYear = 2018,
-                intraAnnualPeriod = c("wetSeason", "drySeason"), 
-                interAnnualPeriod, adhocPeriod = NULL,
-                significance = NULL,
-                save = FALSE, dirToSaveSTA = NULL, numCores = 20){
+sta <- function(data, freq, numFreq = 4, delta = 0, startYear = 2000, endYear = 2018,
+                intraAnnualPeriod = c("wetSeason", "drySeason"), interAnnualPeriod, adhocPeriod = NULL,
+                significance = NULL, save = FALSE, dirToSaveSTA = NULL, numCores = 20){
 
-  if( !(class(data) == "numeric" | class(data) == "RasterStack" | class(data) == "matrix") ){
+  if( !( inherits(data, "numeric") | inherits(data, "RasterStack") | inherits(data, "matrix") ) ){
     stop("'data' must be either numeric, RasterStack or matrix")
   }
   
-  if( class(data) == "RasterStack" ){
+  if( inherits(data, "RasterStack") ){ # class(data) == "RasterStack"
     message("Transferring 'data' to matrix...")
     data <- rasterToPoints(data)
   }
@@ -205,13 +204,13 @@ sta <- function(data,
   
   if( missing(interAnnualPeriod) ){
     message("Calculating 'interAnnualPeriod'...")
-    if( class(data) == "numeric" ){
+    if( inherits(data, "numeric") ){ #  class(data) == "numeric"
       interAnnualPeriod <- 1:(length(data)/freq)
     } else {
       interAnnualPeriod <- 1:((ncol(data)-2)/freq)
     }
   } else {
-    if( class(data) == "numeric" ){
+    if( inherits(data, "numeric") ){ #  class(data) == "numeric"
       if( length(interAnnualPeriod) > length(data)/freq )
        stop("length(data)/freq must be greater or equal than length(interAnnualPeriod)")
     } else {
@@ -226,7 +225,7 @@ sta <- function(data,
     }
   }
   
-  if( class(data) == "numeric" ){
+  if( inherits(data, "numeric") ){ #class(data) == "numeric"
     message("Calculating output for class numeric...")
     output <- get.sta.numeric(data = data, #days = days,
                               days = as.numeric(1:length(data)),
@@ -270,7 +269,7 @@ sta <- function(data,
     } 
   }
   
-  if(class(data) == "numeric"){
+  if( inherits(data, "numeric") ){# class(data) == "numeric"
     sta.out <- structure(output, class = "staNumeric")
   } else {
     sta.out <- structure(output, class = "staMatrix")
@@ -296,7 +295,7 @@ plot.staNumeric <- function(x,
                             # startYear, endYear, interAnnualPeriod=1:(length(startYear:endYear)),
                             significance=NULL, ...){
   
-  if(class(x) != "staNumeric"){
+  if( !inherits(x, "staNumeric") ){ # class(x) != "staNumeric"
     stop("'x' must be of class staNumeric")
   }
   
@@ -458,7 +457,7 @@ plot.staNumeric <- function(x,
 #' 
 #' @seealso \code{\link[sta]{sta}}, \code{\link[sta]{getMaster}}, \code{\link[geoTS]{matrixToRaster}}
 plot.staMatrix <- function(x, significance=NULL, master, ...){
-  if(class(x) != "staMatrix"){
+  if( !inherits(x, "staMatrix") ){ #class(x) != "staMatrix"
     stop("'x' must be of class staMatrix")
   }
   

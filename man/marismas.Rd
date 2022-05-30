@@ -4,7 +4,9 @@
 \name{marismas}
 \alias{marismas}
 \title{10-day Composite NDMI Time Series}
-\format{An object of class \code{"numeric"}.}
+\format{
+An object of class \code{"numeric"}.
+}
 \usage{
 data(marismas)
 }
